@@ -11,17 +11,13 @@ const API_TOKEN = process.env.TOP_GG_API_TOKEN;
 
 app.get('/widget.png', async (req, res) => {
   try {
-    // Ambil data vote dari API Top.gg
     const response = await fetch(`https://top.gg/api/bots/${BOT_ID}/stats`, {
       headers: { Authorization: API_TOKEN }
     });
     const data = await response.json();
     const votes = data.totalVotes || 0;
-
-    // Format angka votes
     const formattedVotes = votes.toLocaleString();
 
-    // Canvas setup
     const canvas = createCanvas(800, 250);
     const ctx = canvas.getContext('2d');
 
@@ -29,7 +25,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillStyle = '#1e1e2f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Avatar (lingkaran)
+    // Avatar bulat
     const avatar = await loadImage('https://i.imgur.com/Ze08bGk.png');
     ctx.save();
     ctx.beginPath();
@@ -39,19 +35,18 @@ app.get('/widget.png', async (req, res) => {
     ctx.drawImage(avatar, 30, 30, 128, 128);
     ctx.restore();
 
-    // Bot Name (Lumiwork)
+    // Nama bot "Lumiwork"
     ctx.fillStyle = 'white';
     ctx.font = 'bold 32px Sans';
     ctx.fillText('Lumiwork', 180, 85);
 
-    // Oval background untuk total votes
+    // Background oval votes (geser ke atas)
     const voteText = `${formattedVotes} votes`;
     ctx.font = 'bold 30px Sans';
     const voteWidth = ctx.measureText(voteText).width + 60;
     const voteX = (canvas.width - voteWidth) / 2;
-    const voteY = 140;
+    const voteY = 115; // ← digeser dari 140 ke 115
 
-    // Oval background (rounded rectangle)
     ctx.fillStyle = '#292944';
     ctx.beginPath();
     ctx.moveTo(voteX, voteY);
@@ -65,24 +60,25 @@ app.get('/widget.png', async (req, res) => {
     ctx.quadraticCurveTo(voteX - 20, voteY, voteX, voteY);
     ctx.fill();
 
-    // Total votes text
+    // Text votes di tengah atas
     ctx.fillStyle = 'white';
     ctx.font = 'bold 30px Sans';
     ctx.fillText(voteText, (canvas.width - ctx.measureText(voteText).width) / 2, voteY + 50);
 
-    // Banner bawah: "Vote Lumiwork on (logo) Top.gg"
+    // Banner merah bawah
     ctx.fillStyle = '#FF3366';
     ctx.fillRect(0, 200, canvas.width, 50);
 
-    const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png'); // Top.gg logo PNG kecil
-    ctx.drawImage(logo, 345, 212, 24, 24);
+    // Logo Top.gg & Teks
+    const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png');
+    ctx.drawImage(logo, 480, 212, 24, 24); // ← geser logo ke kanan
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
-    ctx.fillText('Vote Lumiwork on', 230, 232);
-    ctx.fillText('Top.gg', 375, 232);
+    ctx.fillText('Vote Lumiwork on', 280, 232);
+    ctx.fillText('Top.gg', 515, 232); // ← geser teks Top.gg ke kanan
 
-    // Output sebagai PNG
+    // PNG Output
     res.setHeader('Content-Type', 'image/png');
     canvas.createPNGStream().pipe(res);
   } catch (err) {
