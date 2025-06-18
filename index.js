@@ -76,7 +76,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
     ctx.fillText('Vote Lumiwork on', 270, 232);
-    ctx.fillText('Top.gg', 528, 232); // ← geser teks Top.gg ke kanan
+    ctx.fillText('Top.gg', 534, 232); // ← geser teks Top.gg ke kanan
 
     // PNG Output
     res.setHeader('Content-Type', 'image/png');
