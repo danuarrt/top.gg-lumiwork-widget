@@ -71,12 +71,12 @@ app.get('/widget.png', async (req, res) => {
 
     // Logo Top.gg & Teks
     const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png');
-    ctx.drawImage(logo, 499, 212, 24, 24); // ← geser logo ke kanan
+    ctx.drawImage(logo, 503, 212, 24, 24); // ← geser logo ke kanan
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
     ctx.fillText('Vote Lumiwork on', 270, 232);
-    ctx.fillText('Top.gg', 519, 232); // ← geser teks Top.gg ke kanan
+    ctx.fillText('Top.gg', 528, 232); // ← geser teks Top.gg ke kanan
 
     // PNG Output
     res.setHeader('Content-Type', 'image/png');
