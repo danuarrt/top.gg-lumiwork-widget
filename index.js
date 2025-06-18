@@ -26,7 +26,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Bot Avatar
-    const avatar = await loadImage('https://cdn.discordapp.com/attachments/1202471761065549844/1384975344552902758/B474B74F-995A-4A97-956B-3B4E9606D58E.png');
+    const avatar = await loadImage('https://i.imgur.com/Ze08bGk.png');
     ctx.drawImage(avatar, 30, 30, 128, 128);
 
     // Text
