@@ -71,7 +71,7 @@ app.get('/widget.png', async (req, res) => {
 
     // Logo Top.gg & Teks
     const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png');
-    ctx.drawImage(logo, 485, 212, 24, 24); // ← geser logo ke kanan
+    ctx.drawImage(logo, 499, 212, 24, 24); // ← geser logo ke kanan
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
