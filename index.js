@@ -11,11 +11,11 @@ const API_TOKEN = process.env.TOP_GG_API_TOKEN;
 
 app.get('/widget.png', async (req, res) => {
   try {
-    const response = await fetch(`https://top.gg/api/bots/${BOT_ID}/stats`, {
+    const response = await fetch(`https://top.gg/api/bots/${BOT_ID}`, {
       headers: { Authorization: API_TOKEN }
     });
     const data = await response.json();
-    const votes = data.totalVotes || 0;
+    const votes = data.votes || 0;
     const formattedVotes = votes.toLocaleString();
 
     const canvas = createCanvas(800, 250);
