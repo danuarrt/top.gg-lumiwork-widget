@@ -41,6 +41,7 @@ app.get('/widget.png', async (req, res) => {
     res.setHeader('Content-Type', 'image/png');
     canvas.createPNGStream().pipe(res);
   } catch (err) {
+    console.error('Image Error:', err);
     res.status(500).send('Error generating image');
   }
 });
