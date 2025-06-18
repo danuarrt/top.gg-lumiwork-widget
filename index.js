@@ -38,14 +38,14 @@ app.get('/widget.png', async (req, res) => {
     // Nama bot "Lumiwork"
     ctx.fillStyle = 'white';
     ctx.font = 'bold 32px Sans';
-    ctx.fillText('Lumiwork', 180, 85);
+    ctx.fillText('Lumiwork', 180, 76);
 
     // Background oval votes (geser ke atas)
     const voteText = `${formattedVotes} votes`;
     ctx.font = 'bold 30px Sans';
     const voteWidth = ctx.measureText(voteText).width + 60;
     const voteX = (canvas.width - voteWidth) / 2;
-    const voteY = 92; // ← digeser dari 140 ke 115
+    const voteY = 96; // ← digeser dari 140 ke 115
 
     ctx.fillStyle = '#292944';
     ctx.beginPath();
@@ -71,12 +71,12 @@ app.get('/widget.png', async (req, res) => {
 
     // Logo Top.gg & Teks
     const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png');
-    ctx.drawImage(logo, 470, 212, 24, 24); // ← geser logo ke kanan
+    ctx.drawImage(logo, 485, 212, 24, 24); // ← geser logo ke kanan
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
     ctx.fillText('Vote Lumiwork on', 270, 232);
-    ctx.fillText('Top.gg', 515, 232); // ← geser teks Top.gg ke kanan
+    ctx.fillText('Top.gg', 519, 232); // ← geser teks Top.gg ke kanan
 
     // PNG Output
     res.setHeader('Content-Type', 'image/png');
