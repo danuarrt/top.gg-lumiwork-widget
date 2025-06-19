@@ -20,12 +20,22 @@ app.get('/widget.png', async (req, res) => {
       })
     ]);
 
+    console.log(`Stats Status: ${statsRes.status}`);
+    console.log(`Detail Status: ${detailRes.status}`);
+
     const stats = await statsRes.json();
     const details = await detailRes.json();
+
+    console.log('Stats JSON:', stats);
+    console.log('Detail JSON:', details);
 
     const votes = stats.monthly_votes || 0;
     const servers = stats.server_count || 0;
     const owner = details.owner?.username || 'Unknown';
+
+    console.log(`Parsed Votes: ${votes}`);
+    console.log(`Parsed Servers: ${servers}`);
+    console.log(`Parsed Owner: ${owner}`);
 
     const canvas = createCanvas(800, 250);
     const ctx = canvas.getContext('2d');
