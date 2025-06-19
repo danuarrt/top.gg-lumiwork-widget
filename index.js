@@ -144,6 +144,34 @@ app.get('/widget.png', async (req, res) => {
   }
 });
 
+app.use(express.json());
+
+app.post('/webhook', (req, res) => {
+  const { user } = req.body;
+  if (!user) return res.status(400).send('Invalid payload');
+
+  const discordWebhookURL = process.env.DISCORD_WEBHOOK_URL;
+
+  fetch(discordWebhookURL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      embeds: [{
+        title: '🎉 New Vote!',
+        description: `<@${user}> just voted for **Lumiwork** on [Top.gg](https://top.gg/bot/${BOT_ID})!\n\nThank you for your support!`,
+        color: 0xFF3366,
+        timestamp: new Date().toISOString()
+      }]
+    })
+  }).then(() => {
+    console.log(`Vote received from ${user}`);
+    res.sendStatus(204);
+  }).catch(err => {
+    console.error('Failed to send webhook to Discord:', err);
+    res.sendStatus(500);
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Widget is live on port ${PORT}`);
 });
