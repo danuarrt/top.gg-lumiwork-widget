@@ -11,7 +11,7 @@ const BOT_ID = '1374161486510948464';
 const API_TOKEN = process.env.TOP_GG_API_TOKEN;
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
-// Fungsi untuk ambil username owner dari Discord API
+// Fungsi ambil username owner dari Discord API
 const fetchUsername = async (id) => {
   try {
     const userRes = await fetch(`https://discord.com/api/v10/users/${id}`, {
@@ -28,6 +28,7 @@ const fetchUsername = async (id) => {
 
 app.get('/widget.png', async (req, res) => {
   try {
+    // Fetch data dari Top.gg
     const [statsRes, detailRes] = await Promise.all([
       fetch(`https://top.gg/api/bots/${BOT_ID}/stats`, {
         headers: { Authorization: API_TOKEN }
@@ -40,15 +41,20 @@ app.get('/widget.png', async (req, res) => {
     const stats = await statsRes.json();
     const details = await detailRes.json();
 
-    const votes = stats.monthly_votes || 0;
-    const servers = stats.server_count || 0;
+    console.log('Stats JSON:', stats);
+    console.log('Detail JSON:', details);
+
+    // Perbaikan fallback votes & servers
+    const votes = stats.monthly_votes ?? details.points ?? 0;
+    const servers = stats.server_count ?? details.server_count ?? 0;
+
     const ownerId = details.owners?.[0] || null;
     const ownerUsername = ownerId ? await fetchUsername(ownerId) : 'Unknown';
 
     const canvas = createCanvas(800, 250);
     const ctx = canvas.getContext('2d');
 
-    // Background utama
+    // Background
     ctx.fillStyle = '#1e1e2f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -67,14 +73,15 @@ app.get('/widget.png', async (req, res) => {
     ctx.font = 'bold 32px Sans';
     ctx.fillText('Lumiwork', 180, 76);
 
-    // Fungsi render box oval
-    const infoFont = 'bold 20px Sans';
+    // Fungsi buat box teks
     const renderBox = (text, x, y) => {
+      const infoFont = 'bold 20px Sans';
       ctx.font = infoFont;
       const textWidth = ctx.measureText(text).width;
       const padding = 20;
       const boxWidth = textWidth + padding * 2;
       const boxHeight = 36;
+
       const boxX = x - boxWidth / 2;
       const boxY = y - boxHeight / 2;
 
@@ -92,15 +99,16 @@ app.get('/widget.png', async (req, res) => {
       ctx.fill();
 
       ctx.fillStyle = 'white';
+      ctx.font = infoFont;
       ctx.fillText(text, x - textWidth / 2, y + 7);
     };
 
-    // Posisi votes, servers, owner (segitiga terbalik)
+    // Render box data
     renderBox(`${votes.toLocaleString()} votes`, 290, 135);
     renderBox(`${servers.toLocaleString()} servers`, 510, 135);
     renderBox(`Owner: ${ownerUsername}`, 400, 180);
 
-    // Banner merah bawah & Top.gg logo
+    // Banner merah + logo top.gg
     ctx.fillStyle = '#FF3366';
     ctx.fillRect(0, 200, canvas.width, 50);
 
@@ -112,7 +120,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillText('Vote Lumiwork on', 270, 232);
     ctx.fillText('Top.gg', 534, 232);
 
-    // Last updated time
+    // Waktu update (pojok kiri bawah)
     const now = new Date();
     const timeString = now.toLocaleString('en-US', {
       timeZone: 'Asia/Jakarta',
@@ -127,6 +135,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.font = 'italic 14px Sans';
     ctx.fillText(`Last updated: ${timeString}`, 10, 245);
 
+    // Output PNG
     res.setHeader('Content-Type', 'image/png');
     canvas.createPNGStream().pipe(res);
   } catch (err) {
@@ -136,5 +145,5 @@ app.get('/widget.png', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Widget is live on port ${PORT}`);
+  console.log(`Widget is live on port ${PORT}`);
 });
