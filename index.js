@@ -165,3 +165,38 @@ app.post('/vote', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Widget is live on port ${PORT}`);
 });
+
+app.post('/github', express.json({ type: '*/*' }), async (req, res) => {
+  try {
+    const { commits, repository, pusher, ref } = req.body;
+
+    if (!commits || commits.length === 0) return res.sendStatus(200);
+
+    const latest = commits[commits.length - 1];
+    const shortSha = latest.id.substring(0, 7);
+    const branch = ref.split('/').pop();
+
+    const embed = {
+      author: {
+        name: `${repository.full_name}:${branch}`,
+        icon_url: repository.owner.avatar_url,
+        url: repository.html_url
+      },
+      description: `[\`${shortSha}\`](${latest.url}) ${latest.message} — **${pusher.name}**`,
+      color: 0x24292f, // GitHub dark gray color
+      timestamp: new Date().toISOString()
+    };
+
+    await fetch(process.env.DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ embeds: [embed] })
+    });
+
+    console.log(`✅ GitHub commit: ${shortSha}`);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('❌ GitHub Webhook Error:', err);
+    res.sendStatus(400);
+  }
+});
