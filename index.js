@@ -175,3 +175,37 @@ app.post('/webhook', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Widget is live on port ${PORT}`);
 });
+
+app.post('/vote', express.json(), async (req, res) => {
+  const { user, type } = req.body;
+
+  // URL webhook Discord kamu
+  const discordWebhookURL = process.env.DISCORD_VOTE_WEBHOOK;
+
+  // Kirim pesan ke webhook
+  try {
+    await fetch(discordWebhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'Top.gg Vote',
+        avatar_url: 'https://cdn.top.gg/icon.png',
+        embeds: [{
+          title: '🗳️ New Vote!',
+          description: `<@${user}> just voted for **Lumiwork** on [Top.gg](https://top.gg/bot/${BOT_ID})!`,
+          color: 0xFF3366,
+          footer: {
+            text: 'Thank you for your support!'
+          },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    });
+
+    console.log(`✅ Vote webhook sent for user ${user}`);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('❌ Failed to send Discord webhook:', err);
+    res.sendStatus(500);
+  }
+});
