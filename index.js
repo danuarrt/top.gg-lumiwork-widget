@@ -2,6 +2,8 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { createCanvas, loadImage } from 'canvas';
 import dotenv from 'dotenv';
+import ora from 'ora';
+
 dotenv.config();
 
 const app = express();
@@ -11,7 +13,13 @@ const BOT_ID = '1374161486510948464';
 const API_TOKEN = process.env.TOP_GG_API_TOKEN;
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
-// Fungsi ambil username owner dari Discord API
+// Spinner startup
+const spinner = ora({
+  text: 'Starting Lumiwork widget server...',
+  spinner: 'shark' // Bisa diganti 'dots', 'pong', dll.
+}).start();
+
+// Ambil username owner dari Discord API
 const fetchUsername = async (id) => {
   try {
     const userRes = await fetch(`https://discord.com/api/v10/users/${id}`, {
@@ -26,6 +34,7 @@ const fetchUsername = async (id) => {
   }
 };
 
+// Endpoint image Top.gg widget
 app.get('/widget.png', async (req, res) => {
   try {
     const [statsRes, detailRes] = await Promise.all([
@@ -131,6 +140,7 @@ app.get('/widget.png', async (req, res) => {
 
 app.use(express.json());
 
+// Vote webhook
 app.post('/vote', async (req, res) => {
   const { user } = req.body;
   if (!user) return res.status(400).send('Invalid payload');
@@ -162,14 +172,10 @@ app.post('/vote', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Widget is live on port ${PORT}`);
-});
-
+// GitHub commits webhook
 app.post('/github', express.json({ type: '*/*' }), async (req, res) => {
   try {
     const { commits, repository, pusher, ref } = req.body;
-
     if (!commits || commits.length === 0) return res.sendStatus(200);
 
     const latest = commits[commits.length - 1];
@@ -183,7 +189,7 @@ app.post('/github', express.json({ type: '*/*' }), async (req, res) => {
         url: repository.html_url
       },
       description: `[\`${shortSha}\`](${latest.url}) ${latest.message} — **${pusher.name}**`,
-      color: 0x24292f, // GitHub dark gray color
+      color: 0x24292f,
       timestamp: new Date().toISOString()
     };
 
@@ -199,4 +205,9 @@ app.post('/github', express.json({ type: '*/*' }), async (req, res) => {
     console.error('❌ GitHub Webhook Error:', err);
     res.sendStatus(400);
   }
+});
+
+// Start server
+app.listen(PORT, () => {
+  spinner.succeed(`✅ Lumiwork widget server is live on port ${PORT}`);
 });
