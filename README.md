@@ -1,2 +1,2 @@
 # top.gg-lumiwork-widget
-# https://discord.gg/luminaire
+https://discord.gg/luminaire
