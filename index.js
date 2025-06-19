@@ -11,13 +11,11 @@ const BOT_ID = '1374161486510948464';
 const API_TOKEN = process.env.TOP_GG_API_TOKEN;
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
-// Fungsi ambil username owner dari Discord API
+// Fungsi untuk ambil username owner dari Discord API
 const fetchUsername = async (id) => {
   try {
     const userRes = await fetch(`https://discord.com/api/v10/users/${id}`, {
-      headers: {
-        Authorization: `Bot ${DISCORD_TOKEN}`
-      }
+      headers: { Authorization: `Bot ${DISCORD_TOKEN}` }
     });
     if (!userRes.ok) return null;
     const userData = await userRes.json();
@@ -30,7 +28,6 @@ const fetchUsername = async (id) => {
 
 app.get('/widget.png', async (req, res) => {
   try {
-    // Fetch data dari Top.gg
     const [statsRes, detailRes] = await Promise.all([
       fetch(`https://top.gg/api/bots/${BOT_ID}/stats`, {
         headers: { Authorization: API_TOKEN }
@@ -40,14 +37,8 @@ app.get('/widget.png', async (req, res) => {
       })
     ]);
 
-    console.log(`Stats Status: ${statsRes.status}`);
-    console.log(`Detail Status: ${detailRes.status}`);
-
     const stats = await statsRes.json();
     const details = await detailRes.json();
-
-    console.log('Stats JSON:', stats);
-    console.log('Detail JSON:', details);
 
     const votes = stats.monthly_votes || 0;
     const servers = stats.server_count || 0;
@@ -57,11 +48,11 @@ app.get('/widget.png', async (req, res) => {
     const canvas = createCanvas(800, 250);
     const ctx = canvas.getContext('2d');
 
-    // Background
+    // Background utama
     ctx.fillStyle = '#1e1e2f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Avatar bot bulat
+    // Avatar bulat
     const avatar = await loadImage('https://i.imgur.com/Ze08bGk.png');
     ctx.save();
     ctx.beginPath();
@@ -76,22 +67,18 @@ app.get('/widget.png', async (req, res) => {
     ctx.font = 'bold 32px Sans';
     ctx.fillText('Lumiwork', 180, 76);
 
-    // TEXT BOX GENERATOR: votes, servers, owner
+    // Fungsi render box oval
     const infoFont = 'bold 20px Sans';
-    const textColor = 'white';
-    const boxColor = '#292944';
-
     const renderBox = (text, x, y) => {
       ctx.font = infoFont;
       const textWidth = ctx.measureText(text).width;
       const padding = 20;
       const boxWidth = textWidth + padding * 2;
       const boxHeight = 36;
-
       const boxX = x - boxWidth / 2;
       const boxY = y - boxHeight / 2;
 
-      ctx.fillStyle = boxColor;
+      ctx.fillStyle = '#292944';
       ctx.beginPath();
       ctx.moveTo(boxX + 10, boxY);
       ctx.lineTo(boxX + boxWidth - 10, boxY);
@@ -104,17 +91,16 @@ app.get('/widget.png', async (req, res) => {
       ctx.quadraticCurveTo(boxX, boxY, boxX + 10, boxY);
       ctx.fill();
 
-      ctx.fillStyle = textColor;
-      ctx.font = infoFont;
+      ctx.fillStyle = 'white';
       ctx.fillText(text, x - textWidth / 2, y + 7);
     };
 
-    // Posisi text: votes, servers, owner (segitiga terbalik)
+    // Posisi votes, servers, owner (segitiga terbalik)
     renderBox(`${votes.toLocaleString()} votes`, 290, 135);
     renderBox(`${servers.toLocaleString()} servers`, 510, 135);
     renderBox(`Owner: ${ownerUsername}`, 400, 180);
 
-    // Banner merah & Top.gg
+    // Banner merah bawah & Top.gg logo
     ctx.fillStyle = '#FF3366';
     ctx.fillRect(0, 200, canvas.width, 50);
 
@@ -126,7 +112,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillText('Vote Lumiwork on', 270, 232);
     ctx.fillText('Top.gg', 534, 232);
 
-    // Waktu last updated (pojok kiri bawah)
+    // Last updated time
     const now = new Date();
     const timeString = now.toLocaleString('en-US', {
       timeZone: 'Asia/Jakarta',
@@ -141,7 +127,6 @@ app.get('/widget.png', async (req, res) => {
     ctx.font = 'italic 14px Sans';
     ctx.fillText(`Last updated: ${timeString}`, 10, 245);
 
-    // PNG Output
     res.setHeader('Content-Type', 'image/png');
     canvas.createPNGStream().pipe(res);
   } catch (err) {
@@ -151,5 +136,5 @@ app.get('/widget.png', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Widget is live on port ${PORT}`);
+  console.log(`✅ Widget is live on port ${PORT}`);
 });
