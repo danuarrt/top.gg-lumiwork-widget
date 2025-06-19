@@ -165,3 +165,45 @@ app.post('/vote', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Widget is live on port ${PORT}`);
 });
+
+app.use(express.json());
+
+app.post('/github', (req, res) => {
+  const payload = req.body;
+  const commits = payload.commits || [];
+  const repo = payload.repository?.full_name || 'Unknown Repo';
+  const avatar = payload.sender?.avatar_url;
+  const author = payload.sender?.login;
+
+  if (!commits.length) return res.sendStatus(204);
+
+  const commit = commits[0];
+
+  fetch(process.env.DISCORD_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: repo,
+      avatar_url: avatar,
+      embeds: [
+        {
+          title: `📦 [${repo}] ${commits.length} new commit${commits.length > 1 ? 's' : ''}`,
+          description: `\`${commit.id.slice(0, 7)}\` ${commit.message} — **${commit.author.name}**`,
+          url: commit.url,
+          color: 0x2ecc71,
+          timestamp: new Date().toISOString(),
+          author: {
+            name: author,
+            icon_url: avatar
+          }
+        }
+      ]
+    })
+  }).then(() => {
+    console.log(`✅ GitHub commit sent by ${author}`);
+    res.sendStatus(200);
+  }).catch(err => {
+    console.error('❌ Failed to send GitHub webhook:', err);
+    res.sendStatus(500);
+  });
+});
