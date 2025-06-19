@@ -29,13 +29,13 @@ app.get('/widget.png', async (req, res) => {
     console.log('Stats JSON:', stats);
     console.log('Detail JSON:', details);
 
-    const votes = stats.monthly_votes || 0;
-    const servers = stats.server_count || 0;
-    const owner = details.owner?.username || 'Unknown';
+    const votes = details.points || details.monthlyPoints || 0;
+    const servers = details.server_count || 0;
+    const owner = details.owners?.[0] || 'Unknown';
 
     console.log(`Parsed Votes: ${votes}`);
     console.log(`Parsed Servers: ${servers}`);
-    console.log(`Parsed Owner: ${owner}`);
+    console.log(`Parsed Owner ID: ${owner}`);
 
     const canvas = createCanvas(800, 250);
     const ctx = canvas.getContext('2d');
@@ -93,11 +93,11 @@ app.get('/widget.png', async (req, res) => {
       ctx.fillText(text, x - textWidth / 2, y + 7);
     };
 
-    // Votes & Servers (atas)
+    // Votes & Servers (atas kiri dan kanan)
     renderBox(`${votes.toLocaleString()} votes`, 290, 135);
     renderBox(`${servers.toLocaleString()} servers`, 510, 135);
 
-    // Owner (di tengah bawahnya, segitiga terbalik)
+    // Owner ID (di tengah bawahnya)
     renderBox(`Owner: ${owner}`, 400, 180);
 
     // ======= Banner Merah & Top.gg =======
@@ -105,7 +105,7 @@ app.get('/widget.png', async (req, res) => {
     ctx.fillRect(0, 200, canvas.width, 50);
 
     const logo = await loadImage('https://i.imgur.com/SZ9Gvks.png');
-    ctx.drawImage(logo, 503, 212, 24, 24); // geser logo ke kanan
+    ctx.drawImage(logo, 503, 212, 24, 24); // logo top.gg
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 22px Sans';
