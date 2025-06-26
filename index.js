@@ -126,7 +126,7 @@ app.get('/widget.png', async (req, res) => {
       minute: '2-digit',
     });
 
-    ctx.fillStyle = '#AAAAAA';
+    ctx.fillStyle = 'black';
     ctx.font = 'italic 14px Sans';
     ctx.fillText(`Last updated: ${timeString}`, 10, 245);
 
@@ -158,7 +158,7 @@ app.post('/vote', async (req, res) => {
           title: '🗳️ New Vote!',
           description: `<@${user}> just voted for **Lumiwork** on [Top.gg](https://top.gg/bot/${BOT_ID})!`,
           color: 0xFF3366,
-          footer: { text: 'Thank you for your support!' },
+          footer: { text: '${user} has voted!' },
           timestamp: new Date().toISOString()
         }]
       })
