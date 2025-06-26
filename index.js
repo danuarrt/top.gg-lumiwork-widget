@@ -155,7 +155,7 @@ app.post('/vote', async (req, res) => {
         username: 'Top.gg Vote',
         avatar_url: 'https://cdn.top.gg/icon.png',
         embeds: [{
-          title: '🗳️ New Vote!',
+          title: 'New Vote!',
           description: `<@${user}> just voted for **Lumiwork** on [Top.gg](https://top.gg/bot/${BOT_ID})!`,
           color: 0xFF3366,
           footer: { text: '${user} has voted!' },
