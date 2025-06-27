@@ -127,7 +127,7 @@ app.get('/widget.png', async (req, res) => {
     });
 
     ctx.fillStyle = 'black';
-    ctx.font = 'italic 6px Sans';
+    ctx.font = 'italic 8px Sans';
     ctx.fillText(`Last updated: ${timeString}`, 10, 245);
 
     res.setHeader('Content-Type', 'image/png');
